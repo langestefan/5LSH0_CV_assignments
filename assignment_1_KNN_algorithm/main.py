@@ -5,6 +5,7 @@ https://scikit-learn.org/stable/auto_examples/datasets/plot_iris_dataset.html
 
 import matplotlib.pyplot as plt
 from sklearn import datasets
+from sklearn.model_selection import train_test_split
 from scipy.spatial.distance import euclidean
 from scipy import stats
 import numpy as np
@@ -19,16 +20,13 @@ def calculate_distances(data, label, point):
     :return: distance from point to the other N-1 points
     """
     size = np.size(data, 0)
-    x0, y0 = data[point, 0], data[point, 1]
+    x0, y0 = point[0], point[1]
     distance = np.zeros((size, 2))
 
     for idx, sample in enumerate(data):
         dis = euclidean([x0, y0], [data[idx, 0], data[idx, 1]])
         distance[idx][0] = label[idx]
         distance[idx][1] = dis
-
-    # delete point we are trying to classify from train set
-    distance = np.delete(distance, point, 0)
 
     return distance
 
@@ -66,7 +64,6 @@ def find_k_nearest_neighbors(distances, k):
     """
     distances = distances[distances[:, 1].argsort()]
     k_nn = np.delete(distances[0:k], 1, 1)
-    print(k_nn)
     return k_nn
 
 
@@ -75,21 +72,45 @@ def app_main():
     iris = datasets.load_iris()
     data = iris.data[:, :2]  # take first 2 features (sepal length/width)
     label = iris.target
+    k = 5  # the K in K-NN
+    n_correct = 0
+
+    # split into train test sets
+    x_train, x_test, y_train, y_test = train_test_split(data, label, test_size=0.2)
+
+    n_test = np.size(x_test, 0)
 
     # visualize_data(data, label)
+    # visualize_data(x_train, y_train)
+    # visualize_data(x_test, y_test)
 
-    # ID of point we want to test
-    point = 115
-    # the K in K-NN
-    k = 3
+    for idx, testp in enumerate(x_test):
+        distances = calculate_distances(x_train, y_train, testp)
+        k_nn = find_k_nearest_neighbors(distances, k)
+        k_mode = stats.mode(k_nn, axis=None)
+        # print("Correct label: {0}".format(int(y_test[idx])))
+        # print("Majority vote: {0}".format(int(k_mode.mode)))
+        if int(y_test[idx]) == int(k_mode.mode):
+            n_correct += 1
 
-    print("Correct label point {0} = {1}".format(point, label[point]))
+    accuracy = 100 * n_correct / n_test
 
-    distances = calculate_distances(data, label, point)
-    k_nn = find_k_nearest_neighbors(distances, k)
-    k_mode = stats.mode(k_nn, axis=None)
-    print("Majority vote: {0}".format(k_mode.mode))
+    print("Accuracy: {0}%".format(accuracy))
 
 
 if __name__ == "__main__":
     app_main()
+
+# answers
+# Vary the train and test splits. What do you observe and why does it happen?
+# -> For high number of test samples the accuracy goes down. This happens because there is not enough data to train the
+# model.
+
+# What happens when k=1?
+# -> Accuracy varies a lot. There is only 1 direct neighbor to compare against so it's quite random.
+
+# What do you observe when k > 1?
+# -> Model is pretty accurate (~80%)
+
+# Can you think of a way to improve the selection of the neighbours?
+# --> We can use a weights system and train the weights
