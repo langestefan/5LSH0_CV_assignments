@@ -6,23 +6,31 @@ https://scikit-learn.org/stable/auto_examples/datasets/plot_iris_dataset.html
 import matplotlib.pyplot as plt
 from sklearn import datasets
 from scipy.spatial.distance import euclidean
+from scipy import stats
+import numpy as np
 
 
-# import iris dataset
-
-def calculate_distances(data, point):
+def calculate_distances(data, label, point):
     """
-    Calculate for given point the distance to the other N-1 samples
+    Calculate for given point the euclidean distance to the other N-1 samples
+    :param label: target type of flower
     :param data: x/y data
     :param point: integer, sample [1-N]
     :return: distance from point to the other N-1 points
     """
+    size = np.size(data, 0)
     x0, y0 = data[point, 0], data[point, 1]
-    x1, y1 = data[point+1, 0], data[point+1, 1]
-    print("Point x0/y0 = {0}:{1}".format(x0, y0))
-    print("Point x1/y1 = {0}:{1}".format(x1, y1))
-    distance = euclidean([x0, y0], [x1, y1])
-    print(distance)
+    distance = np.zeros((size, 2))
+
+    for idx, sample in enumerate(data):
+        dis = euclidean([x0, y0], [data[idx, 0], data[idx, 1]])
+        distance[idx][0] = label[idx]
+        distance[idx][1] = dis
+
+    # delete point we are trying to classify from train set
+    distance = np.delete(distance, point, 0)
+
+    return distance
 
 
 def visualize_data(data, label):
@@ -50,6 +58,18 @@ def visualize_data(data, label):
     plt.show()
 
 
+def find_k_nearest_neighbors(distances, k):
+    """
+    :param k: How many neighbor points K we wish to include
+    :param distances: distance from point to the other N-1 points
+    :return Target labels of K nearest neighbors (K-NN)
+    """
+    distances = distances[distances[:, 1].argsort()]
+    k_nn = np.delete(distances[0:k], 1, 1)
+    print(k_nn)
+    return k_nn
+
+
 def app_main():
     """ App main """
     iris = datasets.load_iris()
@@ -58,7 +78,17 @@ def app_main():
 
     # visualize_data(data, label)
 
-    calculate_distances(data, 1)
+    # ID of point we want to test
+    point = 115
+    # the K in K-NN
+    k = 3
+
+    print("Correct label point {0} = {1}".format(point, label[point]))
+
+    distances = calculate_distances(data, label, point)
+    k_nn = find_k_nearest_neighbors(distances, k)
+    k_mode = stats.mode(k_nn, axis=None)
+    print("Majority vote: {0}".format(k_mode.mode))
 
 
 if __name__ == "__main__":
