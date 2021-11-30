@@ -72,11 +72,11 @@ def app_main():
     iris = datasets.load_iris()
     data = iris.data[:, :2]  # take first 2 features (sepal length/width)
     label = iris.target
-    k = 5  # the K in K-NN
+    k = 35  # the K in K-NN
     n_correct = 0
 
     # split into train test sets
-    x_train, x_test, y_train, y_test = train_test_split(data, label, test_size=0.2)
+    x_train, x_test, y_train, y_test = train_test_split(data, label,  test_size=0.2, random_state=False)
 
     n_test = np.size(x_test, 0)
 
