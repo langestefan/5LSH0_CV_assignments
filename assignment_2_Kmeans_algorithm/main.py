@@ -80,7 +80,7 @@ def calculate_distances(data, point):
 
 def assign_k_means(data, k_means, k):
     """
-    Assign each datapoint to a
+    Assign each datapoint to a mean point
     :param k: K number of mean points
     :param data: Input data points[x0, y0]
     :param k_means: Input K mean points[x0, y0]
@@ -127,7 +127,7 @@ def app_main():
     iris = datasets.load_iris()
     data = iris.data[:, (2, 3)]  # take first 2 features (petal length/width)
     label = iris.target
-    k = 3  # number of k-means
+    k = 3  # number of mean points
     itt = 10  # number of iterations
 
     # split into train test sets
@@ -145,13 +145,33 @@ def app_main():
 
     print(t_point_dict)
 
-    # check accuracy
-    # need to make a list of labels
-
-
     # visualize the data
-    # visualize_data(x_train, k_means, y_train)
+    visualize_data(x_train, k_means, y_train)
+    # visualize_data(x_test, k_means, y_test)
 
 
 if __name__ == "__main__":
     app_main()
+
+# answers
+# Vary the number of clusters and iterations. What do you observe?
+# Higher number of iterations: k-mean becomes more accurate. At some point the result does not change.
+# Number of clusters: 2 clusters makes the mean points very inaccurate. A point may be between 2 clusters.
+
+# What is the impact of random initialization in k-means? How can you
+# improve it?
+# The solution may take longer to converge. It is possible to improve this by for example assigning a data point as the
+# initial mean.
+
+# What is disadvantage of using k-means algorithm?
+# Have to choose K manually. Difficult to place initial positions of means.
+
+# What are the similarities and differences between k-NN and k-means?
+# Explain in detail.
+# Similarities:
+# - a way of grouping similar data
+# - simple to implement
+# Differences:
+# - k-NN is supervised learning, k-means is unsupervised.
+# - Easy to assess accuracy in k-NN, for k-means this is harder
+
