@@ -12,9 +12,9 @@ import numpy as np
 from collections import defaultdict
 
 
-def visualize_data(data, means, label):
+def visualize_data(data, k_means, label):
     """
-    :param means:
+    :param k_means: Input K mean points
     :param data: x/y data
     :param label: labels
     """
@@ -28,7 +28,7 @@ def visualize_data(data, means, label):
 
     # Plot the training points
     plt.scatter(data[:, 0], data[:, 1], c=label, cmap=plt.cm.Set1, edgecolor="black")
-    plt.scatter(means[:, 0], means[:, 1], c='blue', marker='x')
+    plt.scatter(k_means[:, 0], k_means[:, 1], c='blue', marker='x')
     plt.xlabel("Petal length")
     plt.ylabel("Petal width")
 
@@ -75,23 +75,23 @@ def calculate_distances(data, point):
     for idx, sample in enumerate(data):
         distance[idx] = euclidean([x0, y0], [data[idx, 0], data[idx, 1]])
 
-    # print(distance)
     return distance
 
 
-def update_k_means(data, k_means, k):
+def assign_k_means(data, k_means, k):
     """
-    :param data: Training data
-    :param k_means: Input K mean points
-    :param k: K umber of mean points
-    :return: Updated K mean points after one iteration
+    Assign each datapoint to a
+    :param k: K number of mean points
+    :param data: Input data points[x0, y0]
+    :param k_means: Input K mean points[x0, y0]
+    :return: Dictionary where each index is a list of assigned points
     """
+    # default dictionary. Creates object if an object is accessed at index that doesnt exist
+    point_dict = defaultdict(list)
+
     # distance matrix. Contains distance from k points to other points
     size = np.size(data, 0)
     distance_matrix = np.zeros((size, k))
-
-    # default dictionary. Creates object if an object is accessed at index that doesnt exist
-    point_dict = defaultdict(list)
 
     # for each mean point we calculate the distance to the other points
     for idx, point in enumerate(k_means):
@@ -100,14 +100,26 @@ def update_k_means(data, k_means, k):
     # for each point in our train set we check which mean is closest
     # then we create k-clusters of data by assigning the train points to a mean point
     for idx, point in enumerate(data):
-        k_mean = int((np.where(distance_matrix[idx] == np.amin(distance_matrix[idx])))[0])
-        point_dict[k_mean] = point_dict[k_mean] + [point]
+        k_mean_index = int((np.where(distance_matrix[idx] == np.amin(distance_matrix[idx])))[0])
+        point_dict[k_mean_index] = point_dict[k_mean_index] + [point]
+
+    return point_dict
+
+
+def update_k_means(data, k_means, k):
+    """
+    :param data: Training data
+    :param k_means: Input K mean points
+    :param k: K number of mean points
+    :return: Updated K mean points after one iteration
+    """
+    point_dict = assign_k_means(data, k_means, k)
 
     # we sum over the column entries and divide by N to get the average of all assigned points
     for idk in range(k):
         k_means[idk] = np.sum(point_dict[idk], axis=0) / np.size(point_dict[idk], 0)
 
-    return k_means
+    return k_means, point_dict
 
 
 def app_main():
@@ -126,13 +138,19 @@ def app_main():
 
     # train the model
     for i in range(itt):
-        k_means = update_k_means(x_train, k_means, k)
+        k_means, k_point_dict = update_k_means(x_train, k_means, k)
 
-    # show our updated means
-    print(k_means)
+    # run test data
+    t_point_dict = assign_k_means(x_test, k_means, k)
+
+    print(t_point_dict)
+
+    # check accuracy
+    # need to make a list of labels
+
 
     # visualize the data
-    visualize_data(x_train, k_means, y_train)
+    # visualize_data(x_train, k_means, y_train)
 
 
 if __name__ == "__main__":
