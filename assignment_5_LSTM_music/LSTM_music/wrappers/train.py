@@ -23,8 +23,15 @@ def _train_epoch(net, dataloader, loss, opt, config):
     """
     for i in range(config['windows_per_epoch']):
         for inp, tgt in dataloader:
+            inp = inp.type(torch.LongTensor)   # casting to long
             inp = inp.to(config['device']).double()
+
+            tgt = tgt.type(torch.LongTensor)   # casting to long
             tgt = tgt.to(config['device'])
+
+            # inp = inp.to(config['device']).double()
+            # tgt = tgt.to(config['device'])
+
             opt.zero_grad()
             output = net(inp)
             loss_out = loss(output.squeeze(), tgt)
