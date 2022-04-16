@@ -131,6 +131,7 @@ dmypy.json
 # AI stuff
 data/
 *.jpg
+*.pth
 
 # pycharm stuff 
 # Gradle:
@@ -153,3 +154,6 @@ data/
 .idea/uiDesigner.xml
 
 .idea/
+
+# LSTM music assignment
+assignment_5_LSTM_music/LSTM_music/midi*
