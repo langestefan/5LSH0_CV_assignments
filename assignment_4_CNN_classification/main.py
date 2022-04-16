@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def train(epoch):
@@ -61,13 +62,19 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        print(np.shape(x))
         # x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
         x = F.relu(F.max_pool2d(self.conv2(x), 2))
+        print(np.shape(x))
         x = x.view(-1, 320)
+        print(np.shape(x))
         x = F.relu(self.fc1(x))
+        print(np.shape(x))
         # x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.log_softmax(x)
+        print(np.shape(x))
+        result = F.log_softmax(x)
+        return result
 
 
 if __name__ == '__main__':
