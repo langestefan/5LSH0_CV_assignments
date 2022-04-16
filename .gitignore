@@ -157,3 +157,6 @@ data/
 
 # LSTM music assignment
 assignment_5_LSTM_music/LSTM_music/midi*
+
+# vscode
+.vscode

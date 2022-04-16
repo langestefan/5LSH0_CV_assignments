@@ -2,26 +2,26 @@
 data_path: ./midi_songs
 device: cuda:0
 note_file: ./midi_out/data/notes.h5
-out_path: ./midi_out/std
+out_path: ./midi_out/custom
 
 # Net settings
-window: 50
-batch_size: 512
+window: 25
+batch_size: 256
 hidden_size: 512
-num_layers: 3
+num_layers: 9
 dropout: !!python/tuple [0, 0]
 
 # Training settings
-lr: !!python/float 1e-4
-epochs: 200
-ckpt_step: 10
+lr: !!python/float 1e-5
+epochs: 500
+ckpt_step: 50
 windows_per_epoch: 50
 resume: False
 
 # Testing settings
-song_seed: 43
+song_seed: 16
 song_length: 500
-ckpt_epoch: !!python/tuple [100, 200]
+ckpt_epoch: !!python/tuple [100, 200, 300, 400, 500]
 
 
 

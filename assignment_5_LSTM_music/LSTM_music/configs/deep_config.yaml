@@ -3,18 +3,21 @@ data_path: ./midi_songs
 device: cuda:0
 note_file: ./midi_out/data/notes.h5
 out_path: ./midi_out/deep
+
 # Net settings
 window: 50
 batch_size: 512
 hidden_size: 512
 num_layers: 6
 dropout: !!python/tuple [0, 0]
+
 # Training settings
 lr: !!python/float 1e-4
 epochs: 200
 ckpt_step: 10
 windows_per_epoch: 50
 resume: False
+
 # Testing settings
 song_seed: 43
 song_length: 500
